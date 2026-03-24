@@ -1,0 +1,29 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// cấu trúc node
+struct tnode {
+    int data;
+    struct tnode* left;
+    struct tnode* right;
+};
+
+// tạo node mới
+struct tnode* talloc(int data)
+{
+    struct tnode* node = (struct tnode*)malloc(sizeof(struct tnode));
+    node->data = data;
+    node->left = NULL;
+    node->right = NULL;
+    return node;
+}
+
+int main()
+{
+    struct tnode* n = talloc(10);
+
+    printf("Node data: %d\n", n->data);
+
+    free(n);
+    return 0;
+}
