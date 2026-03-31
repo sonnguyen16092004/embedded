@@ -1,0 +1,60 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct {
+    char firstname[50];
+    char lastname[50];
+    int age;
+} Student;
+
+// Callback so sánh theo FirstName
+int compareFirstName(const void *pa, const void *pb) {
+    const Student *s1 = (const Student *)pa;
+    const Student *s2 = (const Student *)pb;
+    return strcmp(s1->firstname, s2->firstname);
+}
+
+// Callback so sánh theo LastName
+int compareLastName(const void *pa, const void *pb) {
+    const Student *s1 = (const Student *)pa;
+    const Student *s2 = (const Student *)pb;
+    return strcmp(s1->lastname, s2->lastname);
+}
+
+// Hàm in nếu sinh viên trên 20 tuổi
+void isolder(Student *s) {
+    if (s->age > 20) {
+        printf("%s %s, %d tuổi\n", s->firstname, s->lastname, s->age);
+    }
+}
+
+// Hàm apply duyệt qua mảng và gọi hàm callback
+void apply(Student *arr, int num, void (*fp)(Student *)) {
+    for (int i = 0; i < num; i++) {
+        fp(&arr[i]);
+    }
+}
+
+int main() {
+    Student students[] = {
+        {"Son", "Nguyen", 22},
+        {"An", "Le", 19},
+        {"Binh", "Tran", 25},
+        {"Hoa", "Pham", 18}
+    };
+    int n = sizeof(students) / sizeof(students[0]);
+
+    printf("--- Sap xep theo First Name ---\n");
+    qsort(students, n, sizeof(Student), compareFirstName);
+    for(int i=0; i<n; i++) printf("%s %s\n", students[i].firstname, students[i].lastname);
+
+    printf("\n--- Sap xep theo Last Name ---\n");
+    qsort(students, n, sizeof(Student), compareLastName);
+    for(int i=0; i<n; i++) printf("%s %s\n", students[i].firstname, students[i].lastname);
+
+    printf("\n--- Sinh vien tren 20 tuoi ---\n");
+    apply(students, n, isolder);
+
+    return 0;
+}
