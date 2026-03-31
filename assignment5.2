@@ -1,0 +1,75 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define HASH_SIZE 100
+
+typedef struct Node {
+    char *word;
+    int count;
+    struct Node *next;
+} Node;
+
+Node *hashtable[HASH_SIZE];
+
+// Hàm băm đơn giản (có thể thay đổi tùy yêu cầu)
+unsigned int hash(char *word) {
+    unsigned int h = 0;
+    for (; *word; word++) h = h * 31 + *word;
+    return h % HASH_SIZE;
+}
+
+// Hàm lookup: Tìm kiếm hoặc tạo mới nếu không thấy
+Node* lookup(char *word, int create) {
+    unsigned int h = hash(word);
+    Node *curr = hashtable[h];
+
+    // Tìm trong danh sách liên kết tại index h
+    while (curr != NULL) {
+        if (strcmp(curr->word, word) == 0) return curr;
+        curr = curr->next;
+    }
+
+    // Nếu không thấy và yêu cầu tạo mới
+    if (create) {
+        Node *newNode = (Node *)malloc(sizeof(Node));
+        newNode->word = strdup(word); // Cấp phát bộ nhớ cho chuỗi
+        newNode->count = 0;
+        newNode->next = hashtable[h]; // Thêm vào đầu danh sách
+        hashtable[h] = newNode;
+        return newNode;
+    }
+    return NULL;
+}
+
+// Hàm giải phóng toàn bộ bảng băm
+void cleartable() {
+    for (int i = 0; i < HASH_SIZE; i++) {
+        Node *curr = hashtable[i];
+        while (curr != NULL) {
+            Node *temp = curr;
+            curr = curr->next;
+            free(temp->word); // Giải phóng chuỗi từ strdup
+            free(temp);       // Giải phóng node
+        }
+        hashtable[i] = NULL;
+    }
+}
+
+int main() {
+    // Demo sử dụng
+    char *words[] = {"hello", "world", "hello", "c", "programming", "hello"};
+    int n = 6;
+
+    for (int i = 0; i < n; i++) {
+        Node *res = lookup(words[i], 1);
+        res->count++;
+    }
+
+    printf("Tan suat tu 'hello': %d\n", lookup("hello", 0)->count);
+    
+    cleartable();
+    printf("Da giai phong bo nho.\n");
+
+    return 0;
+}
